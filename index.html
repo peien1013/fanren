@@ -307,7 +307,6 @@
       if(!item || !item.enabled) return;
       var link = String(item.link||"");
       if(!link || !isHttps(link)){ showToast("這個按鈕的網址還沒有設定喔！"); return; }
-      jsonp({ action:"recordClick", number:index+1 }).catch(function(){});
       var w = window.open(link, "_blank", "noopener,noreferrer");
       if(w){ try{ w.opener = null; }catch(e){} }
     }
