@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="refresh" content="0; url=https://script.google.com/macros/s/AKfycbxw6eyMB_wjWSiUnX4U-7hbDfYrANT_NqWpPuJAzn5D3OZT51PE37gfeQxQIueQPsRN/exec" />
+  <title>凡人小幫手</title>
+  <style>
+    *{ box-sizing:border-box; }
+    html,body{ margin:0; height:100%; }
+    body{
+      font-family:"Noto Sans TC","Microsoft JhengHei",Arial,sans-serif;
+      background:
+        radial-gradient(circle at 12% 10%, #fff1cf 0, transparent 30%),
+        radial-gradient(circle at 88% 12%, #ffe1ec 0, transparent 28%),
+        linear-gradient(180deg,#fff8e7 0%,#fff0d8 100%);
+      color:#5a2a10;
+      display:flex; align-items:center; justify-content:center;
+      min-height:100vh; padding:24px; text-align:center;
+    }
+    .box{ max-width:420px; }
+    .title{
+      font-size:clamp(34px,9vw,56px); font-weight:900; letter-spacing:3px;
+      text-shadow:2px 2px 0 #fff, 4px 4px 0 #ffd88a; margin-bottom:6px;
+    }
+    .sub{ font-size:clamp(15px,4vw,18px); font-weight:800; color:#a85b15; margin-bottom:26px; }
+    .spinner{
+      width:54px; height:54px; margin:0 auto 18px;
+      border:6px solid #ffe0a8; border-top-color:#f4923c;
+      border-radius:50%; animation:spin 0.9s linear infinite;
+    }
+    @keyframes spin{ to{ transform:rotate(360deg); } }
+    .msg{ font-size:clamp(15px,4vw,18px); font-weight:800; color:#8a4a18; }
+    .link{
+      display:inline-block; margin-top:22px; font-weight:900; text-decoration:none;
+      color:#fff; background:linear-gradient(135deg,#ff8a2c,#e65a00);
+      padding:13px 26px; border-radius:999px; font-size:16px;
+      box-shadow:0 8px 18px rgba(120,70,10,.25);
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <div class="title">凡人小幫手</div>
+    <div class="sub">快速登記查詢選單</div>
+    <div class="spinner"></div>
+    <div class="msg">正在帶你進入小幫手…</div>
+    <a class="link" id="go" href="https://script.google.com/macros/s/AKfycbxw6eyMB_wjWSiUnX4U-7hbDfYrANT_NqWpPuJAzn5D3OZT51PE37gfeQxQIueQPsRN/exec">沒有自動進入？點我</a>
+  </div>
+  <script>
+    var url = "https://script.google.com/macros/s/AKfycbxw6eyMB_wjWSiUnX4U-7hbDfYrANT_NqWpPuJAzn5D3OZT51PE37gfeQxQIueQPsRN/exec";
+    try { window.location.replace(url); } catch (e) { window.location.href = url; }
+  </script>
+</body>
+</html>
