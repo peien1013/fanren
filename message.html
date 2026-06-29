@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>留言詢問｜凡人小幫手</title>
+  <link href="https://cdn.jsdelivr.net/gh/justfont/open-huninn-font@2.0/web/jf-openhuninn-2.0.css" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@600&family=Ma+Shan+Zheng&family=Noto+Sans+TC:wght@700;900&display=swap" rel="stylesheet">
+  <style>
+    :root{ --title-font:"Noto Sans TC","Microsoft JhengHei",sans-serif; }
+    *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+    html,body{ margin:0; padding:0; width:100%; min-height:100%; }
+    body{ font-family:"Noto Sans TC","Microsoft JhengHei",Arial,sans-serif;
+      background:radial-gradient(circle at 10% 8%, #fff1cf 0, transparent 26%), radial-gradient(circle at 90% 12%, #ffe1ec 0, transparent 24%), linear-gradient(180deg,#fff8e7 0%,#fff0d8 100%);
+      color:#4a2a12; min-height:100vh; padding:20px 16px 60px; }
+    .page{ width:100%; max-width:560px; margin:0 auto; }
+    .topbar{ display:flex; align-items:center; gap:10px; margin-bottom:16px; }
+    .back-btn{ display:inline-flex; align-items:center; gap:6px; background:#fff; color:#a85b15; font-weight:900; text-decoration:none; padding:9px 16px; border-radius:999px; border:2px solid #f4b85a; box-shadow:0 4px 10px rgba(120,70,10,.12); font-size:15px; }
+    .back-btn:active{ transform:scale(.96); }
+    .header{ text-align:center; margin:6px 0 18px; }
+    .title{ font-family:var(--title-font); font-size:clamp(26px,6vw,42px); font-weight:900; letter-spacing:3px; color:#5a2a10; text-shadow:2px 2px 0 #fff, 4px 4px 0 #ffd88a; }
+    .subtitle{ margin-top:8px; color:#8a4a18; font-weight:800; font-size:clamp(14px,2.6vw,17px); }
+    .card{ background:rgba(255,255,255,.92); border:3px solid #ffe0a8; border-radius:24px; padding:20px 18px; box-shadow:0 8px 20px rgba(120,70,10,.12); }
+    .field{ margin-bottom:16px; }
+    .label{ display:block; font-weight:900; color:#6b3a12; margin-bottom:7px; font-size:16px; }
+    .label .req{ color:#e0497a; margin-left:4px; }
+    .input,.select,.textarea{ width:100%; font-size:17px; font-family:inherit; color:#4a2a12; padding:12px 14px; border:2px solid #f0c98a; border-radius:14px; background:#fffdf8; outline:none; }
+    .input:focus,.select:focus,.textarea:focus{ border-color:#f4923c; box-shadow:0 0 0 3px rgba(244,146,60,.18); }
+    .textarea{ min-height:120px; resize:vertical; line-height:1.6; }
+    .counter{ text-align:right; font-size:12px; color:#a88; margin-top:4px; font-weight:700; }
+    .submit-btn{ width:100%; border:none; cursor:pointer; font-family:inherit; font-size:20px; font-weight:900; color:#fff; letter-spacing:2px; padding:15px; border-radius:999px; background:linear-gradient(135deg,#ff8a2c,#e65a00); box-shadow:0 8px 18px rgba(120,70,10,.25); margin-top:4px; }
+    .submit-btn:active{ transform:scale(.98); }
+    .submit-btn:disabled{ opacity:.6; cursor:not-allowed; }
+    .msg{ margin-top:14px; padding:12px 14px; border-radius:14px; font-weight:800; font-size:15px; display:none; }
+    .msg.err{ display:block; background:#ffe8e8; color:#b22510; border:2px solid #ffb4a0; }
+    .success{ display:none; text-align:center; }
+    .success.show{ display:block; }
+    .success .big-emoji{ font-size:60px; }
+    .success h2{ color:#2c7d13; font-size:26px; margin:8px 0; }
+    .id-box{ margin:16px auto; max-width:420px; background:linear-gradient(180deg,#fffef8,#fff0d8); border:3px dashed #f4923c; border-radius:18px; padding:16px; }
+    .id-box .id-label{ font-weight:800; color:#8a4a18; font-size:14px; }
+    .id-box .id-value{ font-size:clamp(24px,6vw,34px); font-weight:900; color:#d75a00; letter-spacing:2px; margin:6px 0; word-break:break-all; }
+    .copy-btn{ border:none; cursor:pointer; font-family:inherit; font-weight:900; background:#fff; color:#c64500; border:2px solid #f4ad55; padding:8px 18px; border-radius:999px; font-size:14px; }
+    .success .note{ color:#8a4a18; font-weight:700; font-size:14px; line-height:1.7; margin-top:8px; }
+    .success .links{ margin-top:18px; display:flex; flex-direction:column; gap:10px; }
+    .success .links a{ text-decoration:none; font-weight:900; padding:13px; border-radius:999px; font-size:16px; }
+    .link-reply{ background:linear-gradient(135deg,#4296e3,#1e6cc4); color:#fff; }
+    .link-home{ background:#fff; color:#a85b15; border:2px solid #f4b85a; }
+    @media (prefers-reduced-motion:reduce){ *{ transition-duration:.1s !important; } }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="topbar"><a class="back-btn" href="index.html">← 回首頁</a></div>
+    <header class="header">
+      <div class="title">留言詢問</div>
+      <div class="subtitle">留言後會拿到專屬查詢編號</div>
+    </header>
+
+    <div class="card" id="formCard">
+      <div class="field">
+        <label class="label">姓名<span class="req">*</span></label>
+        <input id="name" class="input" type="text" maxlength="30" placeholder="您的稱呼" autocomplete="name">
+      </div>
+      <div class="field">
+        <label class="label">電話<span class="req">*</span></label>
+        <input id="phone" class="input" type="tel" inputmode="numeric" maxlength="20" placeholder="例如 0912345678" autocomplete="tel">
+      </div>
+      <div class="field">
+        <label class="label">分類<span class="req">*</span></label>
+        <select id="category" class="select"><option value="">請選擇分類</option></select>
+      </div>
+      <div class="field">
+        <label class="label">留言內容<span class="req">*</span></label>
+        <textarea id="message" class="textarea" maxlength="500" placeholder="請描述您要詢問的事情"></textarea>
+        <div class="counter"><span id="count">0</span> / 500</div>
+      </div>
+      <div id="errMsg" class="msg err"></div>
+      <button id="submitBtn" class="submit-btn">送出留言</button>
+    </div>
+
+    <div class="card success" id="successCard">
+      <div class="big-emoji">🎉</div>
+      <h2>留言已送出！</h2>
+      <div class="id-box" id="idBox">
+        <div class="id-label">您的查詢編號（請截圖或抄下來）</div>
+        <div class="id-value" id="resultId">—</div>
+        <button class="copy-btn" id="copyBtn">📋 複製編號</button>
+      </div>
+      <div class="note">
+        之後到「查詢回覆」頁，用<br>
+        <b>姓名 + 電話末四碼</b>（或這組編號 + 末四碼）<br>
+        就能追蹤我們的回覆。
+      </div>
+      <div class="links">
+        <a class="link-reply" href="reply.html">🔍 去查詢回覆</a>
+        <a class="link-home" href="index.html">回首頁</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var API = "https://script.google.com/macros/s/AKfycbxw6eyMB_wjWSiUnX4U-7hbDfYrANT_NqWpPuJAzn5D3OZT51PE37gfeQxQIueQPsRN/exec";
+
+    function jsonp(params){
+      return new Promise(function(resolve, reject){
+        var cb = "cb_" + Date.now() + "_" + Math.floor(Math.random()*1e6);
+        var s = document.createElement("script");
+        var timer = setTimeout(function(){ cleanup(); reject(new Error("timeout")); }, 15000);
+        function cleanup(){ clearTimeout(timer); try{ delete window[cb]; }catch(e){ window[cb]=undefined; } if(s.parentNode) s.parentNode.removeChild(s); }
+        window[cb] = function(data){ cleanup(); resolve(data); };
+        var qs = Object.keys(params).map(function(k){ return encodeURIComponent(k)+"="+encodeURIComponent(params[k]); }).join("&");
+        s.onerror = function(){ cleanup(); reject(new Error("network")); };
+        s.src = API + "?" + qs + "&callback=" + cb;
+        document.head.appendChild(s);
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", function(){
+      jsonp({ action:"getConfig" }).then(function(cfg){
+        var cats = (cfg && cfg.categories) ? cfg.categories : [];
+        var sel = document.getElementById("category");
+        cats.forEach(function(c){ var o=document.createElement("option"); o.value=String(c); o.textContent=String(c); sel.appendChild(o); });
+        if(cfg && cfg.settings && cfg.settings.titleFontStack){ document.documentElement.style.setProperty("--title-font", cfg.settings.titleFontStack); }
+      }).catch(function(){});
+
+      var msg = document.getElementById("message"), count = document.getElementById("count");
+      msg.addEventListener("input", function(){ count.textContent = msg.value.length; });
+      document.getElementById("submitBtn").addEventListener("click", onSubmit);
+      document.getElementById("copyBtn").addEventListener("click", function(){ copyText(document.getElementById("resultId").textContent); });
+    });
+
+    function showErr(t){ var b=document.getElementById("errMsg"); b.textContent=t; b.style.display="block"; }
+    function clearErr(){ var b=document.getElementById("errMsg"); b.textContent=""; b.style.display="none"; }
+
+    function onSubmit(){
+      clearErr();
+      var name = document.getElementById("name").value.trim();
+      var phone = String(document.getElementById("phone").value).replace(/[^0-9]/g,"");
+      var category = document.getElementById("category").value;
+      var message = document.getElementById("message").value.trim();
+      if(!name) return showErr("請填寫姓名");
+      if(!phone) return showErr("請填寫電話");
+      if(phone.length<8 || phone.length>15) return showErr("電話格式好像不太對，請再確認");
+      if(!category) return showErr("請選擇分類");
+      if(!message) return showErr("請填寫留言內容");
+
+      var btn = document.getElementById("submitBtn");
+      btn.disabled = true; btn.textContent = "送出中...";
+
+      fetch(API, {
+        method:"POST",
+        headers:{ "Content-Type":"text/plain;charset=utf-8" },
+        body: JSON.stringify({ action:"submitMessage", name:name, phone:phone, category:category, message:message })
+      }).then(function(r){ return r.json(); }).then(function(res){
+        if(res && res.success){ showSuccess(res.id); }
+        else { btn.disabled=false; btn.textContent="送出留言"; showErr((res && res.message) || "送出失敗，請稍後再試"); }
+      }).catch(function(){
+        btn.disabled=false; btn.textContent="送出留言";
+        showErr("送出失敗，請檢查網路後再試一次");
+      });
+    }
+
+    function showSuccess(id){
+      document.getElementById("formCard").style.display = "none";
+      if(id){
+        document.getElementById("resultId").textContent = String(id);
+      } else {
+        document.getElementById("idBox").style.display = "none";
+      }
+      document.getElementById("successCard").classList.add("show");
+      window.scrollTo(0,0);
+    }
+
+    function copyText(text){
+      var btn = document.getElementById("copyBtn");
+      function done(){ btn.textContent="✓ 已複製"; setTimeout(function(){ btn.textContent="📋 複製編號"; },1800); }
+      if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(text).then(done, fallback); } else { fallback(); }
+      function fallback(){ try{ var ta=document.createElement("textarea"); ta.value=text; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); document.body.removeChild(ta); done(); }catch(e){} }
+    }
+  </script>
+</body>
+</html>

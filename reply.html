@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>查詢回覆｜凡人小幫手</title>
+  <link href="https://cdn.jsdelivr.net/gh/justfont/open-huninn-font@2.0/web/jf-openhuninn-2.0.css" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@600&family=Ma+Shan+Zheng&family=Noto+Sans+TC:wght@700;900&display=swap" rel="stylesheet">
+  <style>
+    :root{ --title-font:"Noto Sans TC","Microsoft JhengHei",sans-serif; }
+    *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+    html,body{ margin:0; padding:0; width:100%; min-height:100%; }
+    body{ font-family:"Noto Sans TC","Microsoft JhengHei",Arial,sans-serif;
+      background:radial-gradient(circle at 10% 8%, #e2f4ff 0, transparent 26%), radial-gradient(circle at 90% 12%, #ffe1ec 0, transparent 24%), linear-gradient(180deg,#fff8e7 0%,#fff0d8 100%);
+      color:#4a2a12; min-height:100vh; padding:20px 16px 60px; }
+    .page{ width:100%; max-width:560px; margin:0 auto; }
+    .topbar{ display:flex; align-items:center; gap:10px; margin-bottom:16px; }
+    .back-btn{ display:inline-flex; align-items:center; gap:6px; background:#fff; color:#a85b15; font-weight:900; text-decoration:none; padding:9px 16px; border-radius:999px; border:2px solid #f4b85a; box-shadow:0 4px 10px rgba(120,70,10,.12); font-size:15px; }
+    .back-btn:active{ transform:scale(.96); }
+    .header{ text-align:center; margin:6px 0 16px; }
+    .title{ font-family:var(--title-font); font-size:clamp(26px,6vw,42px); font-weight:900; letter-spacing:3px; color:#5a2a10; text-shadow:2px 2px 0 #fff, 4px 4px 0 #ffd88a; }
+    .subtitle{ margin-top:8px; color:#8a4a18; font-weight:800; font-size:clamp(14px,2.6vw,17px); }
+    .tabs{ display:flex; gap:8px; margin-bottom:14px; }
+    .tab{ flex:1; text-align:center; cursor:pointer; user-select:none; padding:12px 8px; border-radius:16px; font-weight:900; font-size:clamp(14px,2.8vw,17px); background:#fff; color:#888; border:2px solid #d9e7f5; }
+    .tab.active{ background:linear-gradient(135deg,#4296e3,#1e6cc4); color:#fff; border-color:transparent; }
+    .card{ background:rgba(255,255,255,.92); border:3px solid #b4dafc; border-radius:24px; padding:20px 18px; box-shadow:0 8px 20px rgba(40,80,140,.12); }
+    .pane{ display:none; } .pane.show{ display:block; }
+    .field{ margin-bottom:16px; }
+    .label{ display:block; font-weight:900; color:#1559a3; margin-bottom:7px; font-size:16px; }
+    .input{ width:100%; font-size:17px; font-family:inherit; color:#4a2a12; padding:12px 14px; border:2px solid #9bd0f5; border-radius:14px; background:#fafdff; outline:none; }
+    .input:focus{ border-color:#3a8de8; box-shadow:0 0 0 3px rgba(58,141,232,.18); }
+    .hint{ font-size:12.5px; color:#888; margin-top:5px; font-weight:600; }
+    .submit-btn{ width:100%; border:none; cursor:pointer; font-family:inherit; font-size:20px; font-weight:900; color:#fff; letter-spacing:2px; padding:15px; border-radius:999px; background:linear-gradient(135deg,#4296e3,#1e6cc4); box-shadow:0 8px 18px rgba(40,80,140,.25); margin-top:4px; }
+    .submit-btn:active{ transform:scale(.98); } .submit-btn:disabled{ opacity:.6; cursor:not-allowed; }
+    .msg{ margin-top:14px; padding:12px 14px; border-radius:14px; font-weight:800; font-size:15px; display:none; }
+    .msg.err{ display:block; background:#ffe8e8; color:#b22510; border:2px solid #ffb4a0; }
+    .result{ display:none; margin-top:18px; } .result.show{ display:block; }
+    .result-count{ text-align:center; font-weight:900; color:#1559a3; margin-bottom:10px; font-size:15px; }
+    .result-card{ background:linear-gradient(180deg,#fffef8,#fff5e0); border:3px solid #ffe0a8; border-radius:22px; padding:18px; box-shadow:0 6px 16px rgba(120,70,10,.1); margin-bottom:14px; }
+    .row{ display:flex; gap:10px; padding:11px 0; border-bottom:1px dashed #f0cf9a; } .row:last-child{ border-bottom:none; }
+    .row .k{ flex:0 0 88px; font-weight:900; color:#8a4a18; font-size:14px; }
+    .row .v{ flex:1; color:#4a2a12; font-weight:600; line-height:1.6; white-space:pre-wrap; word-break:break-word; }
+    .status-badge{ display:inline-block; padding:4px 12px; border-radius:999px; font-weight:900; font-size:14px; color:#fff; background:#f4923c; }
+    .status-done{ background:#5fb321; } .status-doing{ background:#3a8de8; } .status-wait{ background:#f4923c; }
+    .reply-box{ margin-top:6px; background:#fff; border:2px solid #cdeac0; border-radius:14px; padding:12px 14px; color:#2c5d18; font-weight:700; line-height:1.7; white-space:pre-wrap; }
+    .reply-empty{ color:#a88; font-weight:700; }
+    @media (prefers-reduced-motion:reduce){ *{ transition-duration:.1s !important; } }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="topbar"><a class="back-btn" href="index.html">← 回首頁</a></div>
+    <header class="header">
+      <div class="title">查詢回覆</div>
+      <div class="subtitle">查詢你的留言進度與我們的回覆</div>
+    </header>
+
+    <div class="tabs">
+      <div class="tab active" id="tabName">姓名查詢</div>
+      <div class="tab" id="tabId">編號查詢</div>
+    </div>
+
+    <div class="card">
+      <div class="pane show" id="paneName">
+        <div class="field"><label class="label">姓名</label><input id="qName" class="input" type="text" maxlength="30" placeholder="留言時填的姓名" autocomplete="name"></div>
+        <div class="field"><label class="label">電話末四碼</label><input id="nameLast4" class="input" type="tel" inputmode="numeric" maxlength="4" placeholder="留言電話最後 4 碼"></div>
+        <div class="hint">同一個人留過多則，會一次列出全部喔。</div>
+      </div>
+      <div class="pane" id="paneId">
+        <div class="field"><label class="label">查詢編號</label><input id="qId" class="input" type="text" maxlength="20" placeholder="例如 QA20260629-001" autocapitalize="characters"><div class="hint">就是你留言後拿到的那組編號。</div></div>
+        <div class="field"><label class="label">電話末四碼</label><input id="idLast4" class="input" type="tel" inputmode="numeric" maxlength="4" placeholder="留言電話最後 4 碼"></div>
+      </div>
+      <div id="errMsg" class="msg err"></div>
+      <button id="queryBtn" class="submit-btn">查詢</button>
+    </div>
+
+    <div class="result" id="resultBox">
+      <div class="result-count" id="resultCount"></div>
+      <div id="resultList"></div>
+    </div>
+  </div>
+
+  <script>
+    var API = "https://script.google.com/macros/s/AKfycbxw6eyMB_wjWSiUnX4U-7hbDfYrANT_NqWpPuJAzn5D3OZT51PE37gfeQxQIueQPsRN/exec";
+    var MODE = "name";
+
+    function jsonp(params){
+      return new Promise(function(resolve, reject){
+        var cb = "cb_" + Date.now() + "_" + Math.floor(Math.random()*1e6);
+        var s = document.createElement("script");
+        var timer = setTimeout(function(){ cleanup(); reject(new Error("timeout")); }, 15000);
+        function cleanup(){ clearTimeout(timer); try{ delete window[cb]; }catch(e){ window[cb]=undefined; } if(s.parentNode) s.parentNode.removeChild(s); }
+        window[cb] = function(data){ cleanup(); resolve(data); };
+        var qs = Object.keys(params).map(function(k){ return encodeURIComponent(k)+"="+encodeURIComponent(params[k]); }).join("&");
+        s.onerror = function(){ cleanup(); reject(new Error("network")); };
+        s.src = API + "?" + qs + "&callback=" + cb;
+        document.head.appendChild(s);
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", function(){
+      document.getElementById("tabName").addEventListener("click", function(){ switchMode("name"); });
+      document.getElementById("tabId").addEventListener("click", function(){ switchMode("id"); });
+      document.getElementById("queryBtn").addEventListener("click", onQuery);
+    });
+
+    function switchMode(mode){
+      MODE = mode;
+      document.getElementById("tabName").classList.toggle("active", mode==="name");
+      document.getElementById("tabId").classList.toggle("active", mode==="id");
+      document.getElementById("paneName").classList.toggle("show", mode==="name");
+      document.getElementById("paneId").classList.toggle("show", mode==="id");
+      clearErr(); document.getElementById("resultBox").classList.remove("show");
+    }
+    function showErr(t){ var b=document.getElementById("errMsg"); b.textContent=t; b.style.display="block"; }
+    function clearErr(){ var b=document.getElementById("errMsg"); b.textContent=""; b.style.display="none"; }
+    function lock(btn){ btn.disabled=true; btn.textContent="查詢中..."; }
+    function unlock(btn){ btn.disabled=false; btn.textContent="查詢"; }
+
+    function onQuery(){
+      clearErr(); document.getElementById("resultBox").classList.remove("show");
+      var btn = document.getElementById("queryBtn");
+      if(MODE==="name"){
+        var name = document.getElementById("qName").value.trim();
+        var last4 = String(document.getElementById("nameLast4").value).replace(/[^0-9]/g,"");
+        if(!name) return showErr("請輸入姓名");
+        if(last4.length!==4) return showErr("請輸入電話末四碼（4 個數字）");
+        lock(btn);
+        jsonp({ action:"queryByName", name:name, last4:last4 }).then(function(res){
+          unlock(btn);
+          if(res && res.found){ showRecords(res.records||[]); } else { showErr((res && res.message)||"查無資料"); }
+        }).catch(function(){ unlock(btn); showErr("查詢失敗，請稍後再試"); });
+      } else {
+        var id = document.getElementById("qId").value.trim().toUpperCase();
+        var idLast4 = String(document.getElementById("idLast4").value).replace(/[^0-9]/g,"");
+        if(!id) return showErr("請輸入查詢編號");
+        if(idLast4.length!==4) return showErr("請輸入電話末四碼（4 個數字）");
+        lock(btn);
+        jsonp({ action:"queryReply", id:id, last4:idLast4 }).then(function(res){
+          unlock(btn);
+          if(res && res.found){ showRecords([res]); } else { showErr((res && res.message)||"查無資料"); }
+        }).catch(function(){ unlock(btn); showErr("查詢失敗，請稍後再試"); });
+      }
+    }
+
+    function showRecords(records){
+      var list = document.getElementById("resultList"); list.innerHTML = "";
+      document.getElementById("resultCount").textContent = records.length>1 ? ("共找到 "+records.length+" 筆留言") : "查詢結果";
+      records.forEach(function(rec){ list.appendChild(buildRecordCard(rec)); });
+      document.getElementById("resultBox").classList.add("show");
+    }
+
+    function buildRecordCard(rec){
+      var card = document.createElement("div"); card.className="result-card";
+      card.appendChild(makeRow("查詢編號", rec.id));
+      card.appendChild(makeRow("分類", rec.category));
+      card.appendChild(makeRow("留言內容", rec.message));
+      var sr = document.createElement("div"); sr.className="row";
+      var sk = document.createElement("div"); sk.className="k"; sk.textContent="目前狀態";
+      var sv = document.createElement("div"); sv.className="v";
+      var status = String(rec.status||"待處理");
+      var badge = document.createElement("span");
+      badge.className = "status-badge " + (status.indexOf("已")===0 ? "status-done" : (status==="處理中" ? "status-doing" : "status-wait"));
+      badge.textContent = status; sv.appendChild(badge);
+      sr.appendChild(sk); sr.appendChild(sv); card.appendChild(sr);
+      var rr = document.createElement("div"); rr.className="row";
+      var rk = document.createElement("div"); rk.className="k"; rk.textContent="管理員回覆";
+      var rv = document.createElement("div"); rv.className="v";
+      if(rec.adminReply && String(rec.adminReply).trim()){ var rb=document.createElement("div"); rb.className="reply-box"; rb.textContent=String(rec.adminReply); rv.appendChild(rb); }
+      else { var em=document.createElement("span"); em.className="reply-empty"; em.textContent="尚未回覆，請耐心等候 🙏"; rv.appendChild(em); }
+      rr.appendChild(rk); rr.appendChild(rv); card.appendChild(rr);
+      card.appendChild(makeRow("留言時間", rec.createdTime||"—"));
+      card.appendChild(makeRow("回覆時間", rec.replyTime||"—"));
+      return card;
+    }
+    function makeRow(k,v){
+      var row=document.createElement("div"); row.className="row";
+      var kd=document.createElement("div"); kd.className="k"; kd.textContent=k;
+      var vd=document.createElement("div"); vd.className="v"; vd.textContent=String(v==null?"":v);
+      row.appendChild(kd); row.appendChild(vd); return row;
+    }
+  </script>
+</body>
+</html>
