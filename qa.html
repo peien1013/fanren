@@ -22,13 +22,23 @@
     .back-btn:active{ transform:scale(.96); }
     .header{ text-align:center; margin:6px 0 18px; }
     .title{ font-family:var(--title-font); font-size:clamp(28px,6.4vw,46px); font-weight:900; letter-spacing:3px; color:#5a2a10; text-shadow:2px 2px 0 #fff, 4px 4px 0 #ffd88a; }
-    .subtitle{ margin-top:8px; color:#8a4a18; font-weight:800; font-size:clamp(14px,2.6vw,17px); }
+    .subtitle{ margin-top:8px; color:#8a4a18; font-weight:800; font-size:clamp(14px,2.6vw,17px); min-height:1.2em; }
 
-    .cat-bar{ display:flex; gap:8px; overflow-x:auto; padding:2px 2px 12px; margin-bottom:4px; -webkit-overflow-scrolling:touch; }
-    .cat-bar::-webkit-scrollbar{ height:0; }
-    .cat-chip{ flex:0 0 auto; cursor:pointer; user-select:none; padding:9px 16px; border-radius:999px; font-weight:900; font-size:15px;
-      background:#fff; color:#a85b15; border:2px solid #f4b85a; white-space:nowrap; box-shadow:0 3px 8px rgba(120,70,10,.1); }
-    .cat-chip.active{ background:linear-gradient(135deg,#ff8a2c,#e65a00); color:#fff; border-color:transparent; }
+    .theme-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:14px; }
+    @media (min-width:600px){ .theme-grid{ grid-template-columns:repeat(3,1fr); } }
+    .theme-card{ cursor:pointer; user-select:none; background:linear-gradient(160deg,#fffef8,#fff3df);
+      border:3px solid var(--accent,#ffd89a); border-radius:22px; padding:18px 16px; box-shadow:0 6px 16px rgba(120,70,10,.12);
+      display:flex; flex-direction:column; gap:6px; min-height:120px; transition:transform .2s ease, box-shadow .2s ease; }
+    .theme-card:hover{ transform:translateY(-4px); box-shadow:0 12px 24px rgba(120,70,10,.18); }
+    .theme-card:active{ transform:scale(.97); }
+    .theme-card .t-name{ font-weight:900; font-size:clamp(17px,3.2vw,21px); color:var(--accent-dark,#6b3a12); line-height:1.3; flex:1; }
+    .theme-card .t-count{ font-size:13px; font-weight:800; color:var(--accent-dark,#c64500); opacity:.85; }
+    .theme-card .t-go{ align-self:flex-end; font-weight:900; color:var(--accent-dark,#e65a00); font-size:14px; }
+
+    .theme-back{ display:flex; align-items:center; gap:12px; margin-bottom:16px; flex-wrap:wrap; }
+    .theme-back-btn{ cursor:pointer; font-family:inherit; font-weight:900; background:#fff; color:#a85b15; border:2px solid #f4b85a; padding:9px 16px; border-radius:999px; font-size:15px; }
+    .theme-back-btn:active{ transform:scale(.96); }
+    .theme-title{ font-weight:900; font-size:clamp(18px,3.6vw,23px); color:#6b3a12; }
 
     .faq-list{ display:flex; flex-direction:column; gap:14px; }
     .faq-item{ background:linear-gradient(180deg,#fffef8,#fff5e0); border:3px solid #ffe0a8; border-radius:22px; box-shadow:0 6px 16px rgba(120,70,10,.1); overflow:hidden; }
@@ -52,20 +62,23 @@
     <div class="topbar"><a class="back-btn" href="index.html">← 回首頁</a></div>
     <header class="header">
       <div class="title">常見問題</div>
-      <div class="subtitle">點分類篩選、點問題看答案</div>
+      <div class="subtitle" id="subtitle">載入中…</div>
     </header>
-    <div id="catBar" class="cat-bar" style="display:none"></div>
-    <div id="faqList" class="faq-list"><div class="empty">載入中…</div></div>
+    <div id="content"></div>
     <div class="cta">
       <a class="cta-btn" href="message.html">💬 我要留言詢問</a>
-      <div class="cta-note">留言後會拿到查詢編號，可在「查詢回覆」追蹤進度</div>
+      <div class="cta-note">找不到答案？直接留言問我們</div>
     </div>
   </div>
 
   <script>
     var API = "https://script.google.com/macros/s/AKfycbxw6eyMB_wjWSiUnX4U-7hbDfYrANT_NqWpPuJAzn5D3OZT51PE37gfeQxQIueQPsRN/exec";
-    var FAQ = [], CATS = [], CUR = "__all__";
     var OTHER = "__other__";
+    var FAQ = [], CATS = [];
+    var PALETTE = [
+      {b:"#a8d864", d:"#3b6d11"}, {b:"#f4ad55", d:"#c64500"}, {b:"#ff8eb6", d:"#c12466"},
+      {b:"#7cc0f5", d:"#1559a3"}, {b:"#b58cee", d:"#671d9a"}, {b:"#ff8a5e", d:"#b22510"}
+    ];
 
     function jsonp(params){
       return new Promise(function(resolve, reject){
@@ -85,68 +98,76 @@
       jsonp({ action:"getFaq" }).then(function(res){
         FAQ = (res && Array.isArray(res.faq)) ? res.faq : [];
         CATS = (res && Array.isArray(res.categories)) ? res.categories : [];
-        build();
+        start();
       }).catch(function(){
+        setSub("");
         renderEmpty("連線失敗，請重新整理頁面。");
       });
     });
 
     function catOf(it){ return String(it.category || "").trim(); }
-
-    function build(){
-      var bar = document.getElementById("catBar");
-      bar.innerHTML = "";
-
-      if(!FAQ.length){ renderEmpty("目前還沒有常見問題，您可以直接留言詢問我們。"); return; }
-
-      // 依選單順序、且有題目的分類才顯示
-      var present = CATS.filter(function(c){ return FAQ.some(function(it){ return catOf(it) === c; }); });
-      var hasOther = FAQ.some(function(it){ var c=catOf(it); return !c || CATS.indexOf(c) < 0; });
-
-      if(present.length === 0){
-        bar.style.display = "none";
-        renderList("__all__");
-        return;
-      }
-
-      bar.style.display = "flex";
-      addChip(bar, "全部", "__all__");
-      present.forEach(function(c){ addChip(bar, c, c); });
-      if(hasOther) addChip(bar, "其他", OTHER);
-      setActive("__all__");
+    function setSub(t){ document.getElementById("subtitle").textContent = t; }
+    function present(){ return CATS.filter(function(c){ return FAQ.some(function(it){ return catOf(it) === c; }); }); }
+    function hasOther(){ return FAQ.some(function(it){ var c=catOf(it); return !c || CATS.indexOf(c) < 0; }); }
+    function matches(it, cat){
+      if(cat === OTHER){ var c=catOf(it); return !c || CATS.indexOf(c) < 0; }
+      return catOf(it) === cat;
     }
 
-    function addChip(bar, label, value){
-      var chip = document.createElement("div");
-      chip.className = "cat-chip";
-      chip.textContent = label;
-      chip.setAttribute("data-val", value);
-      chip.addEventListener("click", function(){ setActive(value); });
-      bar.appendChild(chip);
+    function start(){
+      if(!FAQ.length){ setSub(""); renderEmpty("目前還沒有常見問題，您可以直接留言詢問我們。"); return; }
+      var pres = present();
+      if(pres.length === 0){ showFlat(); return; }   // 沒有分類 → 直接列全部
+      showThemes(pres, hasOther());
     }
 
-    function setActive(value){
-      CUR = value;
-      var chips = document.querySelectorAll(".cat-chip");
-      for(var i=0;i<chips.length;i++){ chips[i].classList.toggle("active", chips[i].getAttribute("data-val") === value); }
-      renderList(value);
+    function showThemes(pres, other){
+      setSub("選一個主題，看相關問題");
+      var content = document.getElementById("content"); content.innerHTML = "";
+      var grid = document.createElement("div"); grid.className = "theme-grid";
+      var themes = pres.slice();
+      if(other) themes.push(OTHER);
+      themes.forEach(function(cat, i){
+        var count = FAQ.filter(function(it){ return matches(it, cat); }).length;
+        var name = (cat === OTHER) ? "其他" : cat;
+        var card = document.createElement("div"); card.className = "theme-card";
+        var pal = PALETTE[i % PALETTE.length];
+        card.style.setProperty("--accent", pal.b);
+        card.style.setProperty("--accent-dark", pal.d);
+        var nm = document.createElement("div"); nm.className = "t-name"; nm.textContent = name; card.appendChild(nm);
+        var ct = document.createElement("div"); ct.className = "t-count"; ct.textContent = count + " 個常見問題"; card.appendChild(ct);
+        var go = document.createElement("div"); go.className = "t-go"; go.textContent = "看問題 →"; card.appendChild(go);
+        card.addEventListener("click", function(){ showQuestions(cat, name); });
+        grid.appendChild(card);
+      });
+      content.appendChild(grid);
+      window.scrollTo(0, 0);
     }
 
-    function matches(it, value){
-      if(value === "__all__") return true;
-      var c = catOf(it);
-      if(value === OTHER) return (!c || CATS.indexOf(c) < 0);
-      return c === value;
+    function showQuestions(cat, name){
+      setSub("");
+      var content = document.getElementById("content"); content.innerHTML = "";
+      var back = document.createElement("div"); back.className = "theme-back";
+      var btn = document.createElement("button"); btn.className = "theme-back-btn"; btn.textContent = "← 所有主題";
+      btn.addEventListener("click", function(){ start(); });
+      back.appendChild(btn);
+      var h = document.createElement("div"); h.className = "theme-title"; h.textContent = name; back.appendChild(h);
+      content.appendChild(back);
+
+      var list = document.createElement("div"); list.className = "faq-list";
+      var shown = FAQ.filter(function(it){ return matches(it, cat); });
+      if(!shown.length){ var e=document.createElement("div"); e.className="empty"; e.textContent="這個主題目前沒有問題。"; list.appendChild(e); }
+      else shown.forEach(function(it){ list.appendChild(buildItem(it)); });
+      content.appendChild(list);
+      window.scrollTo(0, 0);
     }
 
-    function renderList(value){
-      var list = document.getElementById("faqList");
-      list.innerHTML = "";
-      var shown = FAQ.filter(function(it){ return matches(it, value); });
-      if(!shown.length){
-        var e=document.createElement("div"); e.className="empty"; e.textContent="這個分類目前沒有問題。"; list.appendChild(e); return;
-      }
-      shown.forEach(function(item){ list.appendChild(buildItem(item)); });
+    function showFlat(){
+      setSub("點問題看答案");
+      var content = document.getElementById("content"); content.innerHTML = "";
+      var list = document.createElement("div"); list.className = "faq-list";
+      FAQ.forEach(function(it){ list.appendChild(buildItem(it)); });
+      content.appendChild(list);
     }
 
     function buildItem(item){
@@ -162,10 +183,8 @@
     }
 
     function renderEmpty(text){
-      document.getElementById("catBar").style.display = "none";
-      var list = document.getElementById("faqList");
-      list.innerHTML = "";
-      var e=document.createElement("div"); e.className="empty"; e.textContent=text; list.appendChild(e);
+      var content = document.getElementById("content"); content.innerHTML = "";
+      var e=document.createElement("div"); e.className="empty"; e.textContent=text; content.appendChild(e);
     }
   </script>
 </body>
