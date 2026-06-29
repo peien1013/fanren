@@ -140,14 +140,14 @@
 
     .footer{ text-align:center; color:#8a4a18; font-weight:800; margin:18px 0 8px; font-size:14px; line-height:1.7; }
 
-    .qa-fab{ position:fixed; right:18px; bottom:calc(18px + env(safe-area-inset-bottom, 0px)); z-index:9000; width:68px; height:68px;
-      display:flex; align-items:center; justify-content:center; padding:0; overflow:hidden; background:#fff; border-radius:50%;
-      border:3px solid #fff; box-shadow:0 8px 20px rgba(120,70,10,.32); animation:fabPulse 2.6s ease-in-out infinite; text-decoration:none; }
+    .qa-fab{ position:fixed; right:16px; bottom:calc(16px + env(safe-area-inset-bottom, 0px)); z-index:9000; width:92px; height:92px;
+      display:flex; align-items:center; justify-content:center; padding:0; background:transparent; border:none;
+      animation:fabPulse 2.6s ease-in-out infinite; text-decoration:none; -webkit-tap-highlight-color:transparent; }
     .qa-fab:active{ transform:scale(.94); }
-    @keyframes fabPulse{ 0%,100%{ transform:scale(1); box-shadow:0 8px 20px rgba(120,70,10,.32); } 50%{ transform:scale(1.07); box-shadow:0 12px 28px rgba(120,70,10,.42); } }
-    .qa-fab-img{ width:100%; height:100%; object-fit:cover; border-radius:50%; display:block; }
-    .qa-fab-emoji{ width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:30px; background:linear-gradient(135deg,#ff8a2c,#e65a00); }
-    @media (max-width:780px){ body{ padding-bottom:100px; } .qa-fab{ right:14px; width:60px; height:60px; } .qa-fab-emoji{ font-size:27px; } }
+    @keyframes fabPulse{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.07); } }
+    .qa-fab-img{ width:100%; height:100%; object-fit:contain; display:block; filter:drop-shadow(0 6px 10px rgba(80,45,10,.38)); }
+    .qa-fab-emoji{ width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:42px; border-radius:50%; color:#fff; background:linear-gradient(135deg,#ff8a2c,#e65a00); box-shadow:0 8px 20px rgba(120,70,10,.32); }
+    @media (max-width:780px){ body{ padding-bottom:120px; } .qa-fab{ right:12px; width:80px; height:80px; } .qa-fab-emoji{ font-size:36px; } }
 
     .toast{ position:fixed; left:50%; bottom:24px; transform:translateX(-50%); background:rgba(70,40,15,.95); color:#fff;
       padding:12px 20px; border-radius:999px; font-size:16px; font-weight:900; box-shadow:0 8px 20px rgba(0,0,0,.2); display:none; z-index:9999; max-width:90%; text-align:center; }
