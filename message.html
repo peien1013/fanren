@@ -19,6 +19,7 @@
     .topbar{ display:flex; align-items:center; gap:10px; margin-bottom:16px; }
     .back-btn{ display:inline-flex; align-items:center; gap:6px; background:#fff; color:#a85b15; font-weight:900; text-decoration:none; padding:9px 16px; border-radius:999px; border:2px solid #f4b85a; box-shadow:0 4px 10px rgba(120,70,10,.12); font-size:15px; }
     .back-btn:active{ transform:scale(.96); }
+    .back-btn.qa{ color:#c12466; border-color:#ff8eb6; }
     .header{ text-align:center; margin:6px 0 18px; }
     .title{ font-family:var(--title-font); font-size:clamp(26px,6vw,42px); font-weight:900; letter-spacing:3px; color:#5a2a10; text-shadow:2px 2px 0 #fff, 4px 4px 0 #ffd88a; }
     .subtitle{ margin-top:8px; color:#8a4a18; font-weight:800; font-size:clamp(14px,2.6vw,17px); }
@@ -53,7 +54,10 @@
 </head>
 <body>
   <div class="page">
-    <div class="topbar"><a class="back-btn" href="index.html">← 回首頁</a></div>
+    <div class="topbar">
+      <a class="back-btn" href="index.html">← 回首頁</a>
+      <a class="back-btn qa" href="qa.html">❓ 常見問題</a>
+    </div>
     <header class="header">
       <div class="title">留言詢問</div>
       <div class="subtitle">留言後會拿到專屬查詢編號</div>
