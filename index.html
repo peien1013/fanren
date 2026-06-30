@@ -5,10 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>凡人小幫手</title>
 
-  <link href="https://cdn.jsdelivr.net/gh/justfont/open-huninn-font@2.0/web/jf-openhuninn-2.0.css" rel="stylesheet">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@600&family=Ma+Shan+Zheng&family=Noto+Sans+TC:wght@700;900&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link href="https://cdn.jsdelivr.net/gh/justfont/open-huninn-font@2.0/web/jf-openhuninn-2.0.css" rel="stylesheet" media="print" onload="this.media='all'">
+  <link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@600&family=Ma+Shan+Zheng&family=Noto+Sans+TC:wght@700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript>
+    <link href="https://cdn.jsdelivr.net/gh/justfont/open-huninn-font@2.0/web/jf-openhuninn-2.0.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@600&family=Ma+Shan+Zheng&family=Noto+Sans+TC:wght@700;900&display=swap" rel="stylesheet">
+  </noscript>
 
   <style>
     :root{ --title-font:"Noto Sans TC","Microsoft JhengHei",sans-serif; }
@@ -274,8 +279,8 @@
     function safeColor(c){ c = String(c||"").toLowerCase(); return COLOR_SET[c] ? c : "orange"; }
     function isHttps(u){ return /^https:\/\//i.test(String(u||"").trim()); }
 
-    function readCache(k){ try{ var v=sessionStorage.getItem(k); return v?JSON.parse(v):null; }catch(e){ return null; } }
-    function writeCache(k,d){ try{ sessionStorage.setItem(k, JSON.stringify(d)); }catch(e){} }
+    function readCache(k){ try{ var v=localStorage.getItem(k); return v?JSON.parse(v):null; }catch(e){ return null; } }
+    function writeCache(k,d){ try{ localStorage.setItem(k, JSON.stringify(d)); }catch(e){} }
 
     function applyCfg(cfg){
       if(!cfg) return;
