@@ -29,12 +29,25 @@
     .back-btn{ display:inline-flex; align-items:center; gap:6px; background:#fff; color:#a85b15; font-weight:900; text-decoration:none;
       padding:9px 16px; border-radius:999px; border:2px solid #f4b85a; box-shadow:0 4px 10px rgba(120,70,10,.12); font-size:15px; }
     .back-btn:active{ transform:scale(.96); }
-    .header{ text-align:center; margin:6px 0 20px; }
+    .header{ text-align:center; margin:6px 0 18px; }
     .title{ display:inline-block; font-family:var(--title-font); font-size:clamp(28px,6.4vw,46px); font-weight:900; letter-spacing:3px;
       color:#5a2a10; text-shadow:2px 2px 0 #fff, 4px 4px 0 #ffd88a; padding:8px 22px; background:rgba(255,255,255,.55); border:3px dashed #f4b85a; border-radius:28px; }
     .subtitle{ margin-top:12px; color:#8a4a18; font-weight:800; font-size:clamp(14px,2.6vw,17px); min-height:1.2em; }
 
-    /* 主題卡片（糖果貼紙風，顏色對應活動） */
+    /* 醒目大搜尋欄 */
+    .search-wrap{ position:relative; max-width:620px; margin:4px auto 22px; }
+    .search-ic{ position:absolute; left:20px; top:50%; transform:translateY(-50%); font-size:24px; pointer-events:none; }
+    .search-input{ width:100%; font-family:inherit; font-size:clamp(17px,3.2vw,21px); font-weight:800; color:#5a2a10;
+      padding:17px 52px 17px 56px; border:4px solid #ffd07a; border-radius:999px; background:#fff;
+      box-shadow:0 8px 22px rgba(120,70,10,.16); outline:none; }
+    .search-input::placeholder{ color:#cda979; font-weight:700; }
+    .search-input:focus{ border-color:#f4923c; box-shadow:0 10px 26px rgba(244,146,60,.28); }
+    .search-clear{ position:absolute; right:16px; top:50%; transform:translateY(-50%); cursor:pointer; border:none;
+      background:#f0e0c0; color:#8a5a18; width:32px; height:32px; border-radius:50%; font-weight:900; font-size:18px;
+      display:none; align-items:center; justify-content:center; line-height:1; }
+    .search-clear.show{ display:flex; }
+    .search-head{ text-align:center; font-weight:900; color:#a85b15; font-size:15px; margin-bottom:12px; }
+
     .theme-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:14px; }
     @media (min-width:600px){ .theme-grid{ grid-template-columns:repeat(3,1fr); } }
     .theme-card{ position:relative; cursor:pointer; user-select:none; overflow:hidden;
@@ -66,6 +79,8 @@
 
     .faq-list{ display:flex; flex-direction:column; gap:14px; }
     .faq-item{ background:linear-gradient(180deg,#fffef8,#fff5e0); border:3px solid #ffe0a8; border-radius:22px; box-shadow:0 6px 16px rgba(120,70,10,.1); overflow:hidden; }
+    .q-tagrow{ padding:11px 16px 0; }
+    .q-tag{ display:inline-block; color:#fff; font-weight:900; font-size:12px; padding:3px 12px; border-radius:999px; background:linear-gradient(135deg,var(--lab1,#ff8a2c),var(--lab2,#e65a00)); }
     .faq-q{ display:flex; align-items:center; gap:10px; padding:16px 18px; cursor:pointer; user-select:none; font-size:clamp(16px,3vw,20px); font-weight:900; color:#6b3a12; }
     .faq-q .qmark{ flex:0 0 auto; width:30px; height:30px; border-radius:50%; background:linear-gradient(135deg,var(--lab1,#ff8a2c),var(--lab2,#e65a00)); color:#fff; display:flex; align-items:center; justify-content:center; font-size:17px; }
     .faq-q .qtext{ flex:1; line-height:1.4; }
@@ -88,6 +103,13 @@
       <div class="title">常見問題</div>
       <div class="subtitle" id="subtitle">載入中…</div>
     </header>
+
+    <div class="search-wrap">
+      <span class="search-ic">🔍</span>
+      <input id="search" class="search-input" type="search" placeholder="輸入關鍵字找問題…" autocomplete="off" enterkeyhint="search">
+      <button id="searchClear" class="search-clear" aria-label="清除搜尋">×</button>
+    </div>
+
     <div id="content"></div>
     <div class="cta">
       <a class="cta-btn" href="message.html">💬 我要留言詢問</a>
@@ -100,7 +122,6 @@
     var OTHER = "__other__";
     var FAQ = [], CATS = [], COLORS = {};
 
-    // 顏色名 → 卡片配色（對應首頁/選單）
     var COLOR_STYLES = {
       green:{bg1:"#f3ffd2",bg2:"#d8f5a0",text:"#2c7d13",lab1:"#75c635",lab2:"#4ea21c"},
       orange:{bg1:"#fff5d8",bg2:"#ffd99a",text:"#c64500",lab1:"#ff8a2c",lab2:"#e65a00"},
@@ -132,7 +153,13 @@
       });
     }
 
+    var searchEl, clearEl;
     document.addEventListener("DOMContentLoaded", function(){
+      searchEl = document.getElementById("search");
+      clearEl = document.getElementById("searchClear");
+      searchEl.addEventListener("input", onSearchInput);
+      clearEl.addEventListener("click", function(){ searchEl.value=""; onSearchInput(); searchEl.focus(); });
+
       jsonp({ action:"getFaq" }).then(function(res){
         FAQ = (res && Array.isArray(res.faq)) ? res.faq : [];
         CATS = (res && Array.isArray(res.categories)) ? res.categories : [];
@@ -141,8 +168,15 @@
       }).catch(function(){ setSub(""); renderEmpty("連線失敗，請重新整理頁面。"); });
     });
 
+    function onSearchInput(){
+      var q = searchEl.value.trim();
+      clearEl.classList.toggle("show", !!q);
+      if(!q){ start(); } else { showSearch(q); }
+    }
+
     function catOf(it){ return String(it.category || "").trim(); }
     function setSub(t){ document.getElementById("subtitle").textContent = t; }
+    function baseColor(name){ return String(name||"").toLowerCase().replace(/-(soft|vivid)$/,""); }
 
     function orderedCategories(){
       var distinct = [];
@@ -154,12 +188,10 @@
     }
     function hasOther(){ return FAQ.some(function(it){ return !catOf(it); }); }
     function matches(it, cat){ if(cat===OTHER){ return !catOf(it); } return catOf(it)===cat; }
-
-    function baseColor(name){ return String(name||"").toLowerCase().replace(/-(soft|vivid)$/,""); }
-    function styleFor(cat, idx){
+    function styleForCat(cat, idx){
       if(cat === OTHER) return COLOR_STYLES.gray;
       var st = COLOR_STYLES[baseColor(COLORS[cat])];
-      return st || COLOR_STYLES[FALLBACK[idx % FALLBACK.length]];
+      return st || (idx!=null ? COLOR_STYLES[FALLBACK[idx % FALLBACK.length]] : null);
     }
 
     function start(){
@@ -170,7 +202,7 @@
     }
 
     function showThemes(pres, other){
-      setSub("選一個主題，看相關問題");
+      setSub("選一個主題，或用上面搜尋");
       var content = document.getElementById("content"); content.innerHTML = "";
       var grid = document.createElement("div"); grid.className = "theme-grid";
       var themes = pres.slice();
@@ -178,7 +210,7 @@
       themes.forEach(function(cat, i){
         var count = FAQ.filter(function(it){ return matches(it, cat); }).length;
         var name = (cat === OTHER) ? "其他" : cat;
-        var st = styleFor(cat, i);
+        var st = styleForCat(cat, i);
         var card = document.createElement("div"); card.className = "theme-card";
         card.style.setProperty("--bg1", st.bg1); card.style.setProperty("--bg2", st.bg2);
         card.style.setProperty("--text", st.text); card.style.setProperty("--lab1", st.lab1); card.style.setProperty("--lab2", st.lab2);
@@ -186,44 +218,71 @@
         var nm = document.createElement("div"); nm.className = "t-name"; nm.textContent = name; card.appendChild(nm);
         var ct = document.createElement("div"); ct.className = "t-count"; ct.textContent = count + " 個常見問題"; card.appendChild(ct);
         var lb = document.createElement("div"); lb.className = "t-label"; lb.textContent = "看問題 →"; card.appendChild(lb);
-        card.addEventListener("click", function(){ showQuestions(cat, name, st); });
+        card.addEventListener("click", function(){ showQuestions(cat, name); });
         grid.appendChild(card);
       });
       content.appendChild(grid);
       window.scrollTo(0, 0);
     }
 
-    function showQuestions(cat, name, st){
+    function showQuestions(cat, name){
       setSub("");
       var content = document.getElementById("content"); content.innerHTML = "";
       var back = document.createElement("div"); back.className = "theme-back";
       var btn = document.createElement("button"); btn.className = "theme-back-btn"; btn.textContent = "← 所有主題";
       btn.addEventListener("click", function(){ start(); });
       back.appendChild(btn);
-      var h = document.createElement("div"); h.className = "theme-title"; h.textContent = name;
-      h.style.color = st ? st.text : "#6b3a12";
+      var st = styleForCat(cat);
+      var h = document.createElement("div"); h.className = "theme-title"; h.textContent = name; if(st) h.style.color = st.text;
       back.appendChild(h);
       content.appendChild(back);
 
       var list = document.createElement("div"); list.className = "faq-list";
-      if(st){ list.style.setProperty("--lab1", st.lab1); list.style.setProperty("--lab2", st.lab2); }
       var shown = FAQ.filter(function(it){ return matches(it, cat); });
       if(!shown.length){ var e=document.createElement("div"); e.className="empty"; e.textContent="這個主題目前沒有問題。"; list.appendChild(e); }
-      else shown.forEach(function(it){ list.appendChild(buildItem(it)); });
+      else shown.forEach(function(it){ list.appendChild(buildItem(it, false)); });
       content.appendChild(list);
       window.scrollTo(0, 0);
     }
 
     function showFlat(){
-      setSub("點問題看答案");
+      setSub("用上面搜尋，或往下看問題");
       var content = document.getElementById("content"); content.innerHTML = "";
       var list = document.createElement("div"); list.className = "faq-list";
-      FAQ.forEach(function(it){ list.appendChild(buildItem(it)); });
+      FAQ.forEach(function(it){ list.appendChild(buildItem(it, false)); });
       content.appendChild(list);
     }
 
-    function buildItem(item){
+    function showSearch(q){
+      setSub("");
+      var ql = q.toLowerCase();
+      var results = FAQ.filter(function(it){
+        return (String(it.q||"") + " " + String(it.a||"")).toLowerCase().indexOf(ql) >= 0;
+      });
+      var content = document.getElementById("content"); content.innerHTML = "";
+      var head = document.createElement("div"); head.className = "search-head";
+      head.textContent = results.length ? ("找到 " + results.length + " 個相關問題") : "找不到相關問題";
+      content.appendChild(head);
+      if(!results.length){
+        var e=document.createElement("div"); e.className="empty"; e.textContent="換個關鍵字試試，或直接留言詢問我們。"; content.appendChild(e); return;
+      }
+      var list = document.createElement("div"); list.className = "faq-list";
+      results.forEach(function(it){ list.appendChild(buildItem(it, true)); });
+      content.appendChild(list);
+    }
+
+    function buildItem(item, showTag){
+      var cat = catOf(item);
+      var st = cat ? styleForCat(cat) : null;
       var wrap = document.createElement("div"); wrap.className="faq-item";
+      if(st){ wrap.style.setProperty("--lab1", st.lab1); wrap.style.setProperty("--lab2", st.lab2); }
+
+      if(showTag && cat){
+        var row = document.createElement("div"); row.className="q-tagrow";
+        var tag = document.createElement("span"); tag.className="q-tag"; tag.textContent = cat;
+        row.appendChild(tag); wrap.appendChild(row);
+      }
+
       var q = document.createElement("div"); q.className="faq-q";
       var mark = document.createElement("span"); mark.className="qmark"; mark.textContent="Q"; q.appendChild(mark);
       var qt = document.createElement("span"); qt.className="qtext"; qt.textContent=String(item.q||""); q.appendChild(qt);
