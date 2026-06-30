@@ -133,7 +133,19 @@
     .rose-vivid{ background:linear-gradient(155deg,#f08aac,#b22a5c); border-color:#7a1238; } .rose-vivid .num{ color:#2a0014; } .rose-vivid .card-label{ background:linear-gradient(135deg,#a01a4a,#6a0a2e); }
     .brown-vivid{ background:linear-gradient(155deg,#b88a5a,#5c3a1c); border-color:#2c1808; } .brown-vivid .num{ color:#fff8e8; } .brown-vivid .card-label{ background:linear-gradient(135deg,#3a2410,#1a0e02); }
 
-    .cloud-wrap{ text-align:center; margin:22px 0 4px; }
+    .service-bar{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; max-width:740px; margin:24px auto 4px; }
+    .svc{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; text-decoration:none;
+      padding:16px 8px; border-radius:22px; border:3px solid #fff; box-shadow:0 8px 18px rgba(80,45,10,.16);
+      font-weight:900; color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.2); transition:transform .2s ease; }
+    .svc:active{ transform:scale(.96); }
+    .svc-ic{ font-size:clamp(26px,6vw,32px); line-height:1; filter:drop-shadow(0 3px 4px rgba(0,0,0,.15)); }
+    .svc-tx{ font-size:clamp(14px,3vw,18px); letter-spacing:1px; }
+    .svc-qa{ background:linear-gradient(135deg,#ff8a2c,#e65a00); }
+    .svc-msg{ background:linear-gradient(135deg,#ff5e95,#d62b6d); }
+    .svc-reply{ background:linear-gradient(135deg,#4296e3,#1e6cc4); }
+    @media (max-width:380px){ .service-bar{ gap:8px; } .svc{ padding:13px 4px; border-width:2px; } }
+
+    .cloud-wrap{ text-align:center; margin:18px 0 4px; }
     .cloud-btn{ display:inline-flex; align-items:center; gap:8px; text-decoration:none; font-weight:900; font-size:clamp(15px,2.6vw,18px);
       letter-spacing:1px; color:#1559a3; background:#fff; border:2px solid #7cc0f5; padding:12px 24px; border-radius:999px; box-shadow:0 6px 14px rgba(40,80,140,.14); }
     .cloud-btn:active{ transform:scale(.97); }
@@ -168,6 +180,12 @@
     <div class="notice" id="notice" hidden></div>
 
     <main id="menuGrid" class="menu-grid"></main>
+
+    <nav class="service-bar" aria-label="服務選單">
+      <a class="svc svc-qa" href="qa.html"><span class="svc-ic">💬</span><span class="svc-tx">常見問題</span></a>
+      <a class="svc svc-msg" href="message.html"><span class="svc-ic">✏️</span><span class="svc-tx">留言詢問</span></a>
+      <a class="svc svc-reply" href="reply.html"><span class="svc-ic">🔍</span><span class="svc-tx">查詢回覆</span></a>
+    </nav>
 
     <div class="cloud-wrap" id="cloudWrap" hidden>
       <a class="cloud-btn" id="cloudBtn" href="#" target="_blank" rel="noopener noreferrer">📁 <span id="cloudText"></span></a>
