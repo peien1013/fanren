@@ -65,8 +65,8 @@
     .t-badge{ position:relative; z-index:1; width:48px; height:48px; border-radius:50%; background:linear-gradient(135deg,#fff,#fff5d6);
       display:flex; align-items:center; justify-content:center; font-size:25px; font-weight:900; color:var(--text,#c64500);
       box-shadow:0 4px 10px rgba(0,0,0,.13), inset 0 0 0 2px rgba(255,255,255,.9); }
-    .t-name{ position:relative; z-index:1; flex:1; display:flex; align-items:center; text-align:center; font-weight:900;
-      font-size:clamp(16px,3.2vw,20px); line-height:1.25; color:var(--text,#c64500); text-shadow:1px 1px 0 rgba(255,255,255,.85); }
+    .t-name{ position:relative; z-index:1; flex:1; display:flex; align-items:center; justify-content:center; text-align:center; font-weight:900;
+      font-size:clamp(18px,3.8vw,23px); line-height:1.28; color:var(--text,#c64500); text-shadow:1px 1px 0 rgba(255,255,255,.85); padding:6px 2px; }
     .t-count{ position:relative; z-index:1; font-size:12px; font-weight:800; color:var(--text,#c64500); opacity:.82; }
     .t-label{ position:relative; z-index:1; width:100%; text-align:center; color:#fff; font-weight:900; font-size:14px; letter-spacing:1px;
       padding:8px 6px; border-radius:999px; background:linear-gradient(135deg,var(--lab1,#ff8a2c),var(--lab2,#e65a00));
@@ -219,7 +219,6 @@
         var card = document.createElement("div"); card.className = "theme-card";
         card.style.setProperty("--bg1", st.bg1); card.style.setProperty("--bg2", st.bg2);
         card.style.setProperty("--text", st.text); card.style.setProperty("--lab1", st.lab1); card.style.setProperty("--lab2", st.lab2);
-        var badge = document.createElement("div"); badge.className="t-badge"; badge.textContent="?"; card.appendChild(badge);
         var nm = document.createElement("div"); nm.className = "t-name"; nm.textContent = name; card.appendChild(nm);
         var ct = document.createElement("div"); ct.className = "t-count"; ct.textContent = count + " 個常見問題"; card.appendChild(ct);
         var lb = document.createElement("div"); lb.className = "t-label"; lb.textContent = "看問題 →"; card.appendChild(lb);
