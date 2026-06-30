@@ -107,17 +107,27 @@
 
     function catOf(it){ return String(it.category || "").trim(); }
     function setSub(t){ document.getElementById("subtitle").textContent = t; }
-    function present(){ return CATS.filter(function(c){ return FAQ.some(function(it){ return catOf(it) === c; }); }); }
-    function hasOther(){ return FAQ.some(function(it){ var c=catOf(it); return !c || CATS.indexOf(c) < 0; }); }
+
+    // 所有有題目的「主題分類」（去重）；先照選單順序，其餘照出現順序，
+    // 這樣不管你在「主題分類」欄填什麼，都會自成一張可點的主題卡片。
+    function orderedCategories(){
+      var distinct = [];
+      FAQ.forEach(function(it){ var c = catOf(it); if(c && distinct.indexOf(c) < 0) distinct.push(c); });
+      var ordered = [];
+      CATS.forEach(function(c){ if(distinct.indexOf(c) >= 0) ordered.push(c); });
+      distinct.forEach(function(c){ if(ordered.indexOf(c) < 0) ordered.push(c); });
+      return ordered;
+    }
+    function hasOther(){ return FAQ.some(function(it){ return !catOf(it); }); } // 只有「留空」才算其他
     function matches(it, cat){
-      if(cat === OTHER){ var c=catOf(it); return !c || CATS.indexOf(c) < 0; }
+      if(cat === OTHER){ return !catOf(it); }
       return catOf(it) === cat;
     }
 
     function start(){
       if(!FAQ.length){ setSub(""); renderEmpty("目前還沒有常見問題，您可以直接留言詢問我們。"); return; }
-      var pres = present();
-      if(pres.length === 0){ showFlat(); return; }   // 沒有分類 → 直接列全部
+      var pres = orderedCategories();
+      if(pres.length === 0){ showFlat(); return; }   // 完全沒分類 → 直接列全部
       showThemes(pres, hasOther());
     }
 
