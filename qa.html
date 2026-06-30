@@ -155,6 +155,16 @@
       });
     }
 
+    function readCache(k){ try{ var v=sessionStorage.getItem(k); return v?JSON.parse(v):null; }catch(e){ return null; } }
+    function writeCache(k,d){ try{ sessionStorage.setItem(k, JSON.stringify(d)); }catch(e){} }
+    function applyFaq(res){
+      FAQ = (res && Array.isArray(res.faq)) ? res.faq : [];
+      CATS = (res && Array.isArray(res.categories)) ? res.categories : [];
+      COLORS = (res && res.colors) ? res.colors : {};
+      EMOJIS = (res && res.emojis) ? res.emojis : {};
+      start();
+    }
+
     var searchEl, clearEl;
     document.addEventListener("DOMContentLoaded", function(){
       searchEl = document.getElementById("search");
@@ -162,14 +172,13 @@
       searchEl.addEventListener("input", onSearchInput);
       clearEl.addEventListener("click", function(){ searchEl.value=""; onSearchInput(); searchEl.focus(); });
 
-      showLoading();
+      var cached = readCache("fanren_faq");
+      if(cached){ applyFaq(cached); } else { showLoading(); }
       jsonp({ action:"getFaq" }).then(function(res){
-        FAQ = (res && Array.isArray(res.faq)) ? res.faq : [];
-        CATS = (res && Array.isArray(res.categories)) ? res.categories : [];
-        COLORS = (res && res.colors) ? res.colors : {};
-        EMOJIS = (res && res.emojis) ? res.emojis : {};
-        start();
-      }).catch(function(){ setSub(""); renderEmpty("連線失敗，請重新整理頁面。"); });
+        var changed = JSON.stringify(res) !== JSON.stringify(cached);
+        writeCache("fanren_faq", res);
+        if(changed && !(searchEl && searchEl.value.trim())) applyFaq(res);
+      }).catch(function(){ if(!cached){ setSub(""); renderEmpty("連線失敗，請重新整理頁面。"); } });
     });
 
     function onSearchInput(){

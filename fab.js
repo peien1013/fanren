@@ -78,12 +78,19 @@
       if(!wrap.contains(e.target)){ wrap.classList.remove("open"); btn.setAttribute("aria-expanded","false"); }
     });
 
-    // 抓小幫手 logo（成功才換掉預設的 💬）
+    // 小幫手 logo：先用瀏覽器快取（秒顯示），再背景更新
+    function setLogo(url){
+      var im = document.createElement("img"); im.className = "ffab-img"; im.src = url; im.alt = "小幫手";
+      im.addEventListener("load", function(){ btn.innerHTML = ""; btn.appendChild(im); });
+    }
+    var cachedLogo = null;
+    try{ cachedLogo = localStorage.getItem("fanren_logo"); }catch(e){}
+    if(cachedLogo && /^https:\/\//i.test(cachedLogo)) setLogo(cachedLogo);
     jsonp({ action:"getConfig" }).then(function(cfg){
       var img = cfg && cfg.settings && cfg.settings.qaButtonImageSafe;
       if(img && /^https:\/\//i.test(img)){
-        var im = document.createElement("img"); im.className = "ffab-img"; im.src = img; im.alt = "小幫手";
-        im.addEventListener("load", function(){ btn.innerHTML = ""; btn.appendChild(im); });
+        try{ localStorage.setItem("fanren_logo", img); }catch(e){}
+        if(img !== cachedLogo) setLogo(img);
       }
     }).catch(function(){});
   }

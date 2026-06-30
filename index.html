@@ -274,18 +274,28 @@
     function safeColor(c){ c = String(c||"").toLowerCase(); return COLOR_SET[c] ? c : "orange"; }
     function isHttps(u){ return /^https:\/\//i.test(String(u||"").trim()); }
 
+    function readCache(k){ try{ var v=sessionStorage.getItem(k); return v?JSON.parse(v):null; }catch(e){ return null; } }
+    function writeCache(k,d){ try{ sessionStorage.setItem(k, JSON.stringify(d)); }catch(e){} }
+
+    function applyCfg(cfg){
+      if(!cfg) return;
+      COLOR_SET = {};
+      (cfg.colors||[]).forEach(function(c){ COLOR_SET[String(c)] = true; });
+      applySettings(cfg.settings || {});
+      MENU = Array.isArray(cfg.menu) ? cfg.menu : [];
+      renderMenu();
+    }
+
     document.addEventListener("DOMContentLoaded", function(){
-      showLoadingText(DEFAULT_LOADING);
       setupFab();
+      var cached = readCache("fanren_cfg");
+      if(cached){ applyCfg(cached); } else { showLoadingText(DEFAULT_LOADING); }
       jsonp({ action:"getConfig" }).then(function(cfg){
-        if(!cfg){ showLoadingText("載入失敗，請重新整理"); return; }
-        (cfg.colors||[]).forEach(function(c){ COLOR_SET[String(c)] = true; });
-        applySettings(cfg.settings || {});
-        MENU = Array.isArray(cfg.menu) ? cfg.menu : [];
-        renderMenu();
-      }).catch(function(){
-        showLoadingText("連線失敗，請重新整理頁面");
-      });
+        if(!cfg){ if(!cached) showLoadingText("載入失敗，請重新整理"); return; }
+        var changed = JSON.stringify(cfg) !== JSON.stringify(cached);
+        writeCache("fanren_cfg", cfg);
+        if(changed) applyCfg(cfg);
+      }).catch(function(){ if(!cached) showLoadingText("連線失敗，請重新整理頁面"); });
     });
 
     function applySettings(s){

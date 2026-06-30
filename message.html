@@ -122,12 +122,23 @@
       });
     }
 
+    function readCache(k){ try{ var v=sessionStorage.getItem(k); return v?JSON.parse(v):null; }catch(e){ return null; } }
+    function writeCache(k,d){ try{ sessionStorage.setItem(k, JSON.stringify(d)); }catch(e){} }
+    function applyCfg(cfg){
+      var sel = document.getElementById("category");
+      sel.innerHTML = '<option value="">請選擇分類</option>';
+      var cats = (cfg && cfg.categories) ? cfg.categories : [];
+      cats.forEach(function(c){ var o=document.createElement("option"); o.value=String(c); o.textContent=String(c); sel.appendChild(o); });
+      if(cfg && cfg.settings && cfg.settings.titleFontStack){ document.documentElement.style.setProperty("--title-font", cfg.settings.titleFontStack); }
+    }
+
     document.addEventListener("DOMContentLoaded", function(){
+      var cached = readCache("fanren_cfg");
+      if(cached){ applyCfg(cached); }
       jsonp({ action:"getConfig" }).then(function(cfg){
-        var cats = (cfg && cfg.categories) ? cfg.categories : [];
-        var sel = document.getElementById("category");
-        cats.forEach(function(c){ var o=document.createElement("option"); o.value=String(c); o.textContent=String(c); sel.appendChild(o); });
-        if(cfg && cfg.settings && cfg.settings.titleFontStack){ document.documentElement.style.setProperty("--title-font", cfg.settings.titleFontStack); }
+        var changed = JSON.stringify(cfg) !== JSON.stringify(cached);
+        writeCache("fanren_cfg", cfg);
+        if(changed) applyCfg(cfg);
       }).catch(function(){});
 
       var msg = document.getElementById("message"), count = document.getElementById("count");
