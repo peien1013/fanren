@@ -134,16 +134,39 @@
     .brown-vivid{ background:linear-gradient(155deg,#b88a5a,#5c3a1c); border-color:#2c1808; } .brown-vivid .num{ color:#fff8e8; } .brown-vivid .card-label{ background:linear-gradient(135deg,#3a2410,#1a0e02); }
 
     .service-bar{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; max-width:740px; margin:24px auto 4px; }
-    .svc{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; text-decoration:none;
-      padding:16px 8px; border-radius:22px; border:3px solid #fff; box-shadow:0 8px 18px rgba(80,45,10,.16);
-      font-weight:900; color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.2); transition:transform .2s ease; }
-    .svc:active{ transform:scale(.96); }
-    .svc-ic{ font-size:clamp(26px,6vw,32px); line-height:1; filter:drop-shadow(0 3px 4px rgba(0,0,0,.15)); }
-    .svc-tx{ font-size:clamp(14px,3vw,18px); letter-spacing:1px; }
-    .svc-qa{ background:linear-gradient(135deg,#ff8a2c,#e65a00); }
-    .svc-msg{ background:linear-gradient(135deg,#ff5e95,#d62b6d); }
-    .svc-reply{ background:linear-gradient(135deg,#4296e3,#1e6cc4); }
-    @media (max-width:380px){ .service-bar{ gap:8px; } .svc{ padding:13px 4px; border-width:2px; } }
+    .svc{ position:relative; overflow:hidden; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; text-decoration:none;
+      padding:18px 8px; border-radius:26px; border:4px solid #fff; box-shadow:0 10px 22px rgba(80,45,10,.18);
+      font-weight:900; color:#fff; text-shadow:0 2px 4px rgba(0,0,0,.3); transition:transform .25s cubic-bezier(.34,1.56,.64,1), box-shadow .25s ease; }
+    /* 泡泡光點 */
+    .svc::before{ content:""; position:absolute; inset:0; pointer-events:none; background:
+      radial-gradient(circle at 18% 18%, rgba(255,255,255,.85) 0 6px, transparent 7px),
+      radial-gradient(circle at 84% 26%, rgba(255,255,255,.6) 0 4px, transparent 5px),
+      radial-gradient(circle at 72% 84%, rgba(255,255,255,.5) 0 5px, transparent 6px),
+      radial-gradient(circle at 30% 82%, rgba(255,255,255,.45) 0 3px, transparent 4px); }
+    /* 反光 */
+    .svc::after{ content:""; position:absolute; top:-34%; left:-12%; width:72%; height:84%; border-radius:50%;
+      background:radial-gradient(circle at 50% 50%, rgba(255,255,255,.5), transparent 70%); pointer-events:none; }
+    .svc:hover{ transform:translateY(-5px) scale(1.03); box-shadow:0 16px 28px rgba(80,45,10,.24); }
+    .svc:active{ transform:translateY(-1px) scale(.97); }
+    .svc-ic{ position:relative; z-index:1; font-size:clamp(28px,6.4vw,34px); line-height:1; filter:drop-shadow(0 3px 4px rgba(0,0,0,.18)); }
+    .svc-tx{ position:relative; z-index:1; font-size:clamp(14px,3vw,18px); letter-spacing:1px; }
+    /* 多色柔和混染（泡泡感） */
+    .svc-qa{ background:
+      radial-gradient(circle at 22% 22%, #ffe28c 0, transparent 52%),
+      radial-gradient(circle at 86% 28%, #ffa9d0 0, transparent 48%),
+      radial-gradient(circle at 55% 96%, #ff7a3c 0, transparent 62%),
+      linear-gradient(135deg,#ffb651,#ff7e3a); }
+    .svc-msg{ background:
+      radial-gradient(circle at 22% 22%, #ffd6ea 0, transparent 52%),
+      radial-gradient(circle at 86% 28%, #c7a8ff 0, transparent 48%),
+      radial-gradient(circle at 55% 96%, #ff5e95 0, transparent 62%),
+      linear-gradient(135deg,#ff90b8,#e24f83); }
+    .svc-reply{ background:
+      radial-gradient(circle at 22% 22%, #bdf2e2 0, transparent 52%),
+      radial-gradient(circle at 86% 28%, #a9d6ff 0, transparent 48%),
+      radial-gradient(circle at 55% 96%, #4296e3 0, transparent 62%),
+      linear-gradient(135deg,#74bcf0,#3a82d2); }
+    @media (max-width:380px){ .service-bar{ gap:8px; } .svc{ padding:14px 4px; border-width:3px; border-radius:22px; } }
 
     .cloud-wrap{ text-align:center; margin:18px 0 4px; }
     .cloud-btn{ display:inline-flex; align-items:center; gap:8px; text-decoration:none; font-weight:900; font-size:clamp(15px,2.6vw,18px);
